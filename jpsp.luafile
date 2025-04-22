@@ -1,0 +1,44 @@
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+
+local function setupFlying(character)
+    local humanoid = character:WaitForChild("Humanoid")
+    local root = character:WaitForChild("HumanoidRootPart")
+
+    local flying = false
+
+    -- 電腦玩家：按空白鍵時啟動飛行
+    UserInputService.InputBegan:Connect(function(input, gameProcessed)
+        if gameProcessed then return end
+        if input.KeyCode == Enum.KeyCode.Space then
+            flying = true
+        end
+    end)
+
+    UserInputService.InputEnded:Connect(function(input)
+        if input.KeyCode == Enum.KeyCode.Space then
+            flying = false
+        end
+    end)
+
+    -- 手機玩家：透過 Humanoid 動作判斷（按跳鍵時）
+    humanoid:GetPropertyChangedSignal("Jump"):Connect(function()
+        flying = humanoid.Jump
+    end)
+
+    -- 每幀控制速度
+    RunService.RenderStepped:Connect(function()
+        if flying and root then
+            root.Velocity = Vector3.new(0, 60, 0) -- 可調整上升速度
+        end
+    end)
+end
+
+-- 自動監聽角色出現
+if player.Character then
+    setupFlying(player.Character)
+end
+player.CharacterAdded:Connect(setupFlying)
