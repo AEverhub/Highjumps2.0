@@ -42,3 +42,13 @@ if player.Character then
     setupFlying(player.Character)
 end
 player.CharacterAdded:Connect(setupFlying)
+
+local player = game.Players.LocalPlayer
+local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+
+if humanoid then
+    humanoid.WalkSpeed = humanoid.WalkSpeed * 2
+    print("速度已提升為原本的兩倍：" .. humanoid.WalkSpeed)
+else
+    warn("找不到 Humanoid")
+end
